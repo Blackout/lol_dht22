@@ -85,12 +85,12 @@ static int read_dht22_dat()
         if ((dht22_dat[2] & 0x80) != 0)  t *= -1;
 
 
-    printf("Humidity = %.2f %% Temperature = %.2f *C \n", h, t );
+    printf("{\"humidity\": %.2f, \"temperature\": %.2f}\n", h, t );
     return 1;
   }
   else
   {
-    printf("Data not good, skip\n");
+//    printf("Data not good, skip\n");
     return 0;
   }
 }
@@ -98,7 +98,7 @@ static int read_dht22_dat()
 int main (int argc, char *argv[])
 {
   int lockfd = 0; //initialize to suppress warning
-  int tries = 100;
+  int tries = 1;
   int lock = 1;
 
   if (argc < 2)
@@ -124,7 +124,7 @@ int main (int argc, char *argv[])
     exit(EXIT_FAILURE);
   }
 
-  printf ("Raspberry Pi wiringPi DHT22 reader\nwww.lolware.net\n") ;
+//  printf ("Raspberry Pi wiringPi DHT22 reader\nwww.lolware.net\n") ;
 
   if(lock)
     lockfd = open_lockfile(LOCKFILE);
@@ -138,14 +138,18 @@ int main (int argc, char *argv[])
     exit(EXIT_FAILURE);
   }
 
+/*
   while (read_dht22_dat() == 0 && tries--) 
   {
      delay(1000); // wait 1sec to refresh
   }
+*/
 
-  delay(1500);
+  read_dht22_dat();
+
+//  delay(1500);
   if(lock)
     close_lockfile(lockfd);
 
   return 0 ;
-}
+} 
