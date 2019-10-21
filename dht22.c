@@ -85,7 +85,7 @@ static int read_dht22_dat()
         if ((dht22_dat[2] & 0x80) != 0)  t *= -1;
 
 
-    printf("{\"humidity\": %.2f, \"temperature\": %.2f}\n", h, t );
+    printf("{\"humidity\": %f, \"temperature\": %f}\n", h, t );
     return 1;
   }
   else
@@ -98,8 +98,8 @@ static int read_dht22_dat()
 int main (int argc, char *argv[])
 {
   int lockfd = 0; //initialize to suppress warning
-  int tries = 1;
-  int lock = 1;
+  int tries = 100;
+  int lock = 0;
 
   if (argc < 2)
     printf ("usage: %s <pin> (<tries> <lock>)\ndescription: pin is the wiringPi pin number\nusing 7 (GPIO 4)\nOptional: tries is the number of times to try to obtain a read (default 100)\n          lock: 0 disables the lockfile (for running as non-root user)\n",argv[0]);
@@ -138,14 +138,11 @@ int main (int argc, char *argv[])
     exit(EXIT_FAILURE);
   }
 
-/*
   while (read_dht22_dat() == 0 && tries--) 
   {
-     delay(1000); // wait 1sec to refresh
+     delay(100); // wait 1sec to refresh
   }
-*/
 
-  read_dht22_dat();
 
 //  delay(1500);
   if(lock)
