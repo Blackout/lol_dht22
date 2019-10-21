@@ -32,7 +32,7 @@ static uint8_t sizecvt(const int read)
   return (uint8_t)read;
 }
 
-static int read_dht22_dat()
+static int read_dht22_dat(int count)
 {
   uint8_t laststate = HIGH;
   uint8_t counter = 0;
@@ -85,7 +85,7 @@ static int read_dht22_dat()
         if ((dht22_dat[2] & 0x80) != 0)  t *= -1;
 
 
-    printf("{\"humidity\": %f, \"temperature\": %f}\n", h, t );
+    printf("{\"humidity\": %f, \"temperature\": %f, \"attempts\": %d}\n", h, t, count );
     return 1;
   }
   else
@@ -100,6 +100,7 @@ int main (int argc, char *argv[])
   int lockfd = 0; //initialize to suppress warning
   int tries = 100;
   int lock = 0;
+  int count = 1;
 
   if (argc < 2)
     printf ("usage: %s <pin> (<tries> <lock>)\ndescription: pin is the wiringPi pin number\nusing 7 (GPIO 4)\nOptional: tries is the number of times to try to obtain a read (default 100)\n          lock: 0 disables the lockfile (for running as non-root user)\n",argv[0]);
@@ -138,7 +139,7 @@ int main (int argc, char *argv[])
     exit(EXIT_FAILURE);
   }
 
-  while (read_dht22_dat() == 0 && tries--) 
+  while (read_dht22_dat(count) == 0 && tries-- && count++) 
   {
      delay(100); // wait 1sec to refresh
   }
